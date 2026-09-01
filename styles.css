@@ -1,0 +1,83 @@
+/* ============================================================
+   D'SE GUSTO — sistema visual
+   Paleta inspirada en el logo: masa tostada sobre parrilla,
+   con acentos rojo braza y dorado.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Karla:wght@400;500;600;700&display=swap');
+
+:root{
+  --char:      #1A130F;   /* fondo principal, negro carbón */
+  --char-2:    #241A14;   /* superficies elevadas */
+  --char-3:    #2E211A;   /* bordes / superficies más claras */
+  --masa:      #F6E8CC;   /* masa de la arepa, crema tostada */
+  --masa-dim:  #E4D3AE;
+  --brasa:     #C7391F;   /* rojo braza — acento primario */
+  --brasa-dark:#9C2C17;
+  --llama:     #E58A2A;   /* naranja llama — acento secundario */
+  --oro:       #F0B23E;   /* dorado — detalles, precios */
+  --tizne:     #5A3B26;   /* marcas de parrilla */
+  --ok:        #4F8F5B;
+  --texto-claro: #F6EDDF;
+  --texto-tenue: #C9B79A;
+
+  --font-display: 'Baloo 2', system-ui, sans-serif;
+  --font-body: 'Karla', system-ui, sans-serif;
+
+  --radius-l: 22px;
+  --radius-m: 14px;
+  --radius-s: 8px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #2A1D15 0%, var(--char) 55%),
+    var(--char);
+  color: var(--texto-claro);
+  font-family: var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+::selection{ background: var(--brasa); color: var(--texto-claro); }
+
+a{ color: inherit; }
+
+button{
+  font-family: var(--font-body);
+  cursor:pointer;
+  border:none;
+  background:none;
+  color:inherit;
+}
+
+/* ---------- utilidades tipográficas ---------- */
+.display{
+  font-family: var(--font-display);
+  font-weight:700;
+  letter-spacing: 0.2px;
+}
+
+/* ---------- textura de "marcas de parrilla" reutilizable ---------- */
+.grill-lines{
+  position:relative;
+  overflow:hidden;
+}
+.grill-lines::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image: repeating-linear-gradient(
+    100deg,
+    transparent 0px, transparent 46px,
+    rgba(0,0,0,0.16) 46px, rgba(0,0,0,0.16) 58px
+  );
+  mix-blend-mode: multiply;
+  pointer-events:none;
+}
+
+/* ---------- scrollbar discreta ---------- */
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-thumb{ background: var(--char-3); border-radius:8px; }
+::-webkit-scrollbar-track{ background:transparent; }

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocina — D'Se Gusto</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ padding:0; }
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--char-3);
+    background: var(--char-2);
+    position:sticky; top:0; z-index:10;
+  }
+  .topbar h1{
+    font-family:var(--font-display); font-size:22px; margin:0; color:var(--texto-claro);
+  }
+  .topbar .sub{ font-size:12.5px; color:var(--texto-tenue); }
+  .status-dot{
+    display:inline-block; width:9px; height:9px; border-radius:50%;
+    background: var(--ok); margin-right:6px;
+    box-shadow: 0 0 0 0 rgba(79,143,91,0.6);
+    animation: pulse 2s infinite;
+  }
+  .status-dot.off{ background:var(--brasa); animation:none; }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(79,143,91,0.5); }
+    70%{ box-shadow:0 0 0 8px rgba(79,143,91,0); }
+    100%{ box-shadow:0 0 0 0 rgba(79,143,91,0); }
+  }
+  .demo-banner{
+    background: var(--tizne); color:var(--oro); font-size:13px;
+    text-align:center; padding:8px; display:none;
+  }
+
+  .board{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 18px;
+    align-items:start;
+  }
+  @media (max-width: 900px){
+    .board{ grid-template-columns: 1fr; }
+  }
+  .column{
+    background: var(--char-2);
+    border-radius: var(--radius-l);
+    border:1px solid var(--char-3);
+    padding: 14px;
+    min-height: 200px;
+  }
+  .column-header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; padding: 0 4px;
+  }
+  .column-header h2{
+    font-family: var(--font-display); font-size:16px; margin:0;
+    display:flex; align-items:center; gap:8px;
+  }
+  .col-dot{ width:10px; height:10px; border-radius:50%; }
+  .col-nuevos .col-dot{ background: var(--brasa); }
+  .col-preparando .col-dot{ background: var(--llama); }
+  .col-listos .col-dot{ background: var(--ok); }
+  .count-pill{
+    background: var(--char); border:1px solid var(--char-3);
+    border-radius:999px; padding:2px 10px; font-size:12.5px; color:var(--texto-tenue);
+  }
+  .empty-col{
+    text-align:center; color:var(--texto-tenue); font-size:13px; padding:30px 10px;
+  }
+
+  .ticket{
+    background: var(--masa);
+    color: #241A14;
+    border-radius: var(--radius-m);
+    padding: 14px 14px 12px;
+    margin-bottom: 12px;
+    position:relative;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  }
+  .ticket::before{
+    content:"";
+    position:absolute; top:-6px; left:16px; right:16px; height:12px;
+    background: repeating-radial-gradient(circle at 8px 6px, transparent 0 3px, var(--char-2) 3px 4px) ;
+    background-size: 16px 12px;
+    background-repeat: repeat-x;
+    display:none; /* efecto opcional de ticket picado, desactivado por simplicidad visual */
+  }
+  .ticket-top{
+    display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;
+  }
+  .ticket-tag{
+    font-family:var(--font-display); font-weight:700; font-size:13px;
+    background: var(--brasa); color:#fff2e4; padding:2px 9px; border-radius:999px;
+  }
+  .ticket-tag.domicilio{ background: var(--tizne); }
+  .ticket-time{ font-size:12px; color:#6b5138; font-weight:600; }
+  .ticket-id{ font-family:var(--font-display); font-size:15px; font-weight:700; margin-bottom:4px; }
+  .ticket-dest{ font-size:12.5px; color:#5a4530; margin-bottom:8px; }
+  .ticket-items{ font-size:13.5px; line-height:1.5; margin-bottom:10px; }
+  .ticket-items .line{ margin-bottom:3px; }
+  .ticket-items .qty{ font-weight:800; }
+  .ticket-items .tp{ color:#7a5a2e; font-size:12.5px; }
+  .ticket-items .nota{ color:var(--brasa-dark); font-size:12.5px; font-style:italic; }
+  .ticket-actions{ display:flex; gap:8px; }
+  .ticket-actions button{
+    flex:1; padding:9px; border-radius:999px; font-family:var(--font-display);
+    font-weight:700; font-size:13px;
+  }
+  .btn-avanzar{ background:#241A14; color:#F6E8CC; }
+  .btn-atras{ background:transparent; color:#5a4530; border:1px solid #b9a482; }
+
+  .ticket.urgente{ box-shadow: 0 0 0 2px var(--brasa), 0 6px 16px rgba(0,0,0,0.35); }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div>
+      <h1>Cocina — D'Se Gusto</h1>
+      <div class="sub"><span class="status-dot" id="statusDot"></span><span id="statusText">Conectado</span></div>
+    </div>
+    <div class="sub" id="clock"></div>
+  </div>
+  <div class="demo-banner" id="demoBanner">
+    Modo demostración — configura config.js con tu URL de Google Sheets para ver pedidos reales aquí.
+  </div>
+
+  <div class="board">
+    <div class="column col-nuevos">
+      <div class="column-header">
+        <h2><span class="col-dot"></span>Nuevos</h2>
+        <span class="count-pill" id="countNuevos">0</span>
+      </div>
+      <div id="colNuevos"></div>
+    </div>
+    <div class="column col-preparando">
+      <div class="column-header">
+        <h2><span class="col-dot"></span>En la parrilla</h2>
+        <span class="count-pill" id="countPreparando">0</span>
+      </div>
+      <div id="colPreparando"></div>
+    </div>
+    <div class="column col-listos">
+      <div class="column-header">
+        <h2><span class="col-dot"></span>Listos</h2>
+        <span class="count-pill" id="countListos">0</span>
+      </div>
+      <div id="colListos"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="cocina.js"></script>
+</body>
+</html>
